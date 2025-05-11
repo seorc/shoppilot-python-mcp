@@ -588,8 +588,8 @@ class AsyncMCPTasksShoppingServer:
             slug identifier that can be used to associate items with the store.
 
             Args:
-                name: Store name (e.g., "Walmart", "Target", "Farmers Market")
-                ctx: The MCP context object for logging and accessing the API client
+                name: Store name (e.g., "Walmart", "Target", "Farmers Market"). Make sure
+                     to ask for an explicit name in case it is not clear from the context.
                 slug: Optional unique identifier for the store (if not provided, will be
                      generated from the name). Should be URL-friendly (lowercase, hyphens)
                 address: Optional physical address or location of the store
@@ -640,7 +640,9 @@ class AsyncMCPTasksShoppingServer:
                 - The store name is the only required field
                 - If last_visit is provided as a string, it should be in ISO format (YYYY-MM-DD)
             """
-            await ctx.info(f"Creating store: {name}" + (f" (slug: {slug})" if slug else ""))
+            await ctx.info(
+                f"Creating store: {name}" + (f" (slug: {slug})" if slug else "")
+            )
 
             api_context = ctx.request_context.lifespan_context
             client = api_context.sync_client
@@ -656,9 +658,7 @@ class AsyncMCPTasksShoppingServer:
             kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
             async with client.get_async_client() as async_client:
-                response = await async_client.create_store_async(
-                    name=name, **kwargs
-                )
+                response = await async_client.create_store_async(name=name, **kwargs)
                 return json.dumps(response, indent=2)
 
         @self.mcp.tool()
