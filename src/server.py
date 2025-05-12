@@ -166,25 +166,26 @@ class AsyncMCPTasksShoppingServer:
         )
         self.mcp.server_config = {}
 
-        # Register resources
-        self.register_resources()
-
         # Register tools
         self.register_tools()
 
-    def register_resources(self):
+    def register_tools(self):
         """
-        Register all resource-related tools for the MCP server.
+        Register all action-related tools for the MCP server.
 
-        This method registers tools primarily focused on retrieving and querying
-        existing data from the API. Resource tools are generally read-only and
-        used for retrieving information rather than modifying it.
+        This method registers tools that perform actions and modify data in the API.
+        These tools include creating new items, updating existing items, and
+        performing batch operations.
 
         Registered tools:
-        - get_store_items: Retrieve shopping items for a specific store
-        - get_urgent_items: Get all urgent shopping items across all stores
-        - get_item: Get a single shopping item by its slug
-        - search_items: Search for shopping items using a text query
+        - create_item: Create a new shopping item with specified attributes
+        - create_store: Create a new store where items can be purchased
+        - mark_item_purchased: Mark an item as purchased with purchase details
+        - batch_operations: Execute multiple operations in parallel for better performance
+
+        Action tools are distinguished from resource tools (registered in register_resources)
+        by their ability to create, modify, or delete data within the API, rather than
+        just querying existing information.
         """
 
         @self.mcp.tool()
@@ -433,25 +434,6 @@ class AsyncMCPTasksShoppingServer:
                     query=query, limit=limit
                 )
                 return json.dumps(response, indent=2)
-
-    def register_tools(self):
-        """
-        Register all action-related tools for the MCP server.
-
-        This method registers tools that perform actions and modify data in the API.
-        These tools include creating new items, updating existing items, and
-        performing batch operations.
-
-        Registered tools:
-        - create_item: Create a new shopping item with specified attributes
-        - create_store: Create a new store where items can be purchased
-        - mark_item_purchased: Mark an item as purchased with purchase details
-        - batch_operations: Execute multiple operations in parallel for better performance
-
-        Action tools are distinguished from resource tools (registered in register_resources)
-        by their ability to create, modify, or delete data within the API, rather than
-        just querying existing information.
-        """
 
         @self.mcp.tool()
         async def create_item(
